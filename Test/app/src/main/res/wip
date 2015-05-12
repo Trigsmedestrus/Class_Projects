@@ -1,0 +1,134 @@
+package com.example.becky.test;
+
+import android.os.CountDownTimer;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+
+public class MainActivity extends ActionBarActivity {
+
+    private EditText pass_word;
+    private Button btnEnter;
+    private Button btnAdd;
+    private ProgressBar pb;
+    private CountDownTimer countDownTimer;
+    private TextView textTimer;
+
+    private long countDownPeriod;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        pb = (ProgressBar) findViewById(R.id.progressBar);
+        textTimer = (TextView) findViewById(R.id.textTimer);
+
+        Animation an = new RotateAnimation(0.0f, 90.0f, 250f, 273f);
+        an.setFillAfter(true);
+        pb.startAnimation(an);
+
+        addListenerOnButton();
+        addToTimer();
+
+        textTimer.setText("00:00");
+        countDownPeriod = 30000;
+//        startTimer(0);
+        startTimer();
+    }
+
+    private void startTimer() {
+        countDownTimer = new CountDownTimer(countDownPeriod + 10000, 1) {
+            // 500 means, onTick function will be called at every 500 milliseconds
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                countDownPeriod=millisUntilFinished;
+                long seconds = millisUntilFinished / 1000;
+                int barVal= (60) - ((int)(seconds/60*100)+(int)(seconds%60));
+                pb.setProgress(barVal);
+
+                // format the textview to show the easily readable format
+                textTimer.setText(String.format("%02d", seconds/60) + ":" + String.format("%02d", seconds%60));
+
+            }
+            @Override
+            public void onFinish() {
+                textTimer.setText("Your trip has ended!");
+            }
+        }.start();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    public void addListenerOnButton() {
+        pass_word = (EditText) findViewById(R.id.editText);
+        btnEnter = (Button) findViewById(R.id.btnEnter);
+        btnEnter.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, pass_word.getText(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void addToTimer() {
+        btnAdd = (Button) findViewById(R.id.btnAdd);
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if (countDownTimer != null) {
+                    countDownTimer.cancel();
+                }
+//                startTimer(0);
+                startTimer();
+                Toast.makeText(MainActivity.this, "Added 10 seconds", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="400dp"
+            android:layout_height="400dp"
+            android:id="@+id/progressBarBackground"
+            android:indeterminate="false"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:max="60"
+            android:progress="60"
+            android:progressDrawable="@drawable/progressbarshadow" />
